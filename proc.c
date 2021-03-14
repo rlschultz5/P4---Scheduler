@@ -74,7 +74,7 @@ myproc(void) {
 static struct proc*
 allocproc(void)
 {
-  struct cpu *c = mycpu();
+//  struct cpu *c = mycpu();
   struct proc *p;
   char *sp;
 
@@ -90,19 +90,25 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-    if(c->head->state == UNUSED){
-        c->head = p;
-        p->next = c->tail;
-        p->prev = c->head;
-        //printf("Head: %s\n",c->head->name);
-    }
-    else {
-        c->tail->next = p;
-        p->prev = c->tail;
-        p->next = c->head;
-        c->head->prev = p;
-        c->tail = p;
-    }
+  if(p->parent == 0) { // P4 NEW CODE
+      p->timeslice = 1; // P4 NEW CODE
+  } // P4 NEW CODE
+  else { // P4 NEW CODE
+      p->timeslice = p->parent->timeslice; // P4 NEW CODE
+  } // P4 NEW CODE
+//    if(c->head->state == UNUSED){
+//        c->head = p;
+//        p->next = c->tail;
+//        p->prev = c->head;
+//        //printf("Head: %s\n",c->head->name);
+//    }
+//    else {
+//        c->tail->next = p;
+//        p->prev = c->tail;
+//        p->next = c->head;
+//        c->head->prev = p;
+//        c->tail = p;
+//    }
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -146,7 +152,6 @@ userinit(void)
     panic("userinit: out of memory?");
   inituvm(p->pgdir, _binary_initcode_start, (int)_binary_initcode_size);
   p->sz = PGSIZE;
-  p->timeslice = 1; // P4 NEW CODE
   memset(p->tf, 0, sizeof(*p->tf));
   p->tf->cs = (SEG_UCODE << 3) | DPL_USER;
   p->tf->ds = (SEG_UDATA << 3) | DPL_USER;
@@ -645,7 +650,6 @@ getpinfo(struct pstat* pstat_getpinfo)
       pstat_getpinfo->schedticks[index] = p->schedticks;  // total number of timer ticks this process has been scheduled
       pstat_getpinfo->sleepticks[index] = p->sleepticks; // number of ticks during which this process was blocked
       pstat_getpinfo->switches[index] = p->switches;  // total num times this process has been scheduled
-    }
     index++;
   }
   release(&ptable.lock);
