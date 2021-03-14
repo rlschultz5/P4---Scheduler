@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="9a147477-a1dc-4033-8963-c5ba016ba1e9" name="CS Lab" url="http://best-linux.cs.wisc.edu">
+        <fileTransfer rootFolder="/afs/cs.wisc.edu/u/r/o/robs" accessType="SFTP" host="royal-23.cs.wisc.edu" port="22" sshConfigId="9f055060-4c61-4df7-972d-3116d459c8d1" sshConfig="robs@royal-23.cs.wisc.edu:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
