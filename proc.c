@@ -96,10 +96,6 @@ found:
   else { // P4 NEW CODE
       p->timeslice = p->parent->timeslice; // P4 NEW CODE
   } // P4 NEW CODE
-  if(p->pid == 2) { // P4 NEW CODE
-      mycpu()->head = p; // P4 NEW CODE
-      
-  } // P4 NEW CODE
 
 //    if(c->head->state == UNUSED){
 //        c->head = p;
