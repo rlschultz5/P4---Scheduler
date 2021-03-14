@@ -10,7 +10,7 @@ struct pstat {
   int schedticks[NPROC];  // total number of timer ticks this process has been scheduled
   int sleepticks[NPROC]; // number of ticks during which this process was blocked
   int switches[NPROC];  // total num times this process has been scheduled
-  char * names[NPROC]; // TODO: REMOVE THIS!!!!!!!
+  char names[NPROC][NPROC]; // TODO: COMMENT THIS OUT!!!!!!!
 };
 
 #endif

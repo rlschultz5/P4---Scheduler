@@ -21,10 +21,11 @@ int main(void)
             getpinfo(trial);
             for(int i = 0; i < 1; i++) {
                 printf(0,"inuse: %d  pid: %d  timeslice: %d  compticks: %d"
-                         "  schedticks: %d  sleepticks: %d  switches: %d\n",
+                         "  schedticks: %d  sleepticks: %d  switches: %d"
+                         "  name: %s\n",
                        trial->inuse[i],trial->pid[i],trial->timeslice[i],
                        trial->compticks[i],trial->schedticks[i],trial->sleepticks[i],
-                       trial->switches[i]);
+                       trial->switches[i],trial->names[i]);
             }
             free(trial);
 

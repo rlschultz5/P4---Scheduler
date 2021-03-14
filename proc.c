@@ -96,10 +96,15 @@ found:
   else { // P4 NEW CODE
       p->timeslice = p->parent->timeslice; // P4 NEW CODE
   } // P4 NEW CODE
+  if(p->pid == 2) { // P4 NEW CODE
+      mycpu()->head = p; // P4 NEW CODE
+      
+  } // P4 NEW CODE
+
 //    if(c->head->state == UNUSED){
 //        c->head = p;
 //        p->next = c->tail;
-//        p->prev = c->head;
+//        p->prev = c->tail;
 //        //printf("Head: %s\n",c->head->name);
 //    }
 //    else {
@@ -650,6 +655,8 @@ getpinfo(struct pstat* pstat_getpinfo)
       pstat_getpinfo->schedticks[index] = p->schedticks;  // total number of timer ticks this process has been scheduled
       pstat_getpinfo->sleepticks[index] = p->sleepticks; // number of ticks during which this process was blocked
       pstat_getpinfo->switches[index] = p->switches;  // total num times this process has been scheduled
+      safestrcpy(pstat_getpinfo->names[index], p->name, sizeof(p->name)); // TODO: COMMENT OUT!!!!!
+    }
     index++;
   }
   release(&ptable.lock);
