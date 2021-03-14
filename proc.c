@@ -96,6 +96,23 @@ found:
   else { // P4 NEW CODE
       p->timeslice = p->parent->timeslice; // P4 NEW CODE
   } // P4 NEW CODE
+  if(strncmp(p->name,"sh", 3)) { // P4 NEW CODE
+      mycpu()->head = p; // P4 NEW CODE
+      p->next = mycpu()->tail;
+      p->prev = mycpu()->tail;
+  } // P4 NEW CODE
+  else {
+      p->prev = mycpu()->tail;
+      p->next = mycpu()->head;
+      mycpu()->tail->next = p;
+      mycpu()->head->prev = p;
+      mycpu()->tail = p;
+//      mycpu()->tail->next = p;
+//      p->prev = mycpu()->tail;
+//      p->next = mycpu()->head;
+//      mycpu()->head->prev = p;
+//      mycpu()->tail = p;
+  }
 
 //    if(c->head->state == UNUSED){
 //        c->head = p;
