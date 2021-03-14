@@ -45,7 +45,6 @@ struct proc {
   int pid;                     // Process ID
 
   struct proc* next;           // New P4 struct for the next process
-  struct proc* prev;
   int timeslice;               // number of base ticks this process can run in a timeslice
   int compticks;               // number of compensation ticks this process has used
   int schedticks;              // total number of timer ticks this process has been scheduled

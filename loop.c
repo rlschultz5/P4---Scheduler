@@ -5,8 +5,10 @@
 
 int main(void)
 {
-  printf(0,"%d\n", setslice(1,2));
-  printf(0,"%d\n", getslice(1));
+//  printf(0,"%d\n", setslice(1,2));
+  printf(0,"%d\n", getslice(0));
+    printf(0,"%d\n", getslice(1));
+    printf(0,"%d\n", getslice(2));
   printf(0,"pid = %d\n", fork2(7));
 //    printf(0,"DONE FORKING\n");
 
