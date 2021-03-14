@@ -1,6 +1,6 @@
 struct stat;
 struct rtcdate;
-struct pstat;
+struct pstat; // P4 new code
 
 // system calls
 int fork(void);

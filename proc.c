@@ -89,7 +89,6 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -183,37 +182,36 @@ growproc(int n)
 int
 fork(void)
 {
-    fork2(getslice()); // New P4 Code
-
-//  int i, pid;
-//  struct proc *np;
-//  struct proc *curproc = myproc();
-//  // Allocate process.
-//  if((np = allocproc()) == 0){
-//    return -1;
-//  }
-//  // Copy process state from proc.
-//  if((np->pgdir = copyuvm(curproc->pgdir, curproc->sz)) == 0){
-//    kfree(np->kstack);
-//    np->kstack = 0;
-//    np->state = UNUSED;
-//    return -1;
-//  }
-//  np->sz = curproc->sz;
-//  np->parent = curproc;
-//  *np->tf = *curproc->tf;
-//  // Clear %eax so that fork returns 0 in the child.
-//  np->tf->eax = 0;
-//  for(i = 0; i < NOFILE; i++)
-//    if(curproc->ofile[i])
-//      np->ofile[i] = filedup(curproc->ofile[i]);
-//  np->cwd = idup(curproc->cwd);
-//  safestrcpy(np->name, curproc->name, sizeof(curproc->name));
-//  pid = np->pid;
-//  acquire(&ptable.lock);
-//  np->state = RUNNABLE;
-//  release(&ptable.lock);
-//  return pid;
+  int i, pid;
+  struct proc *np;
+  struct proc *curproc = myproc();
+  // Allocate process.
+  if((np = allocproc()) == 0){
+    return -1;
+  }
+  // Copy process state from proc.
+  if((np->pgdir = copyuvm(curproc->pgdir, curproc->sz)) == 0){
+    kfree(np->kstack);
+    np->kstack = 0;
+    np->state = UNUSED;
+    return -1;
+  }
+  np->sz = curproc->sz;
+  np->parent = curproc;
+  *np->tf = *curproc->tf;
+  // Clear %eax so that fork returns 0 in the child.
+  np->tf->eax = 0;
+  for(i = 0; i < NOFILE; i++)
+    if(curproc->ofile[i])
+      np->ofile[i] = filedup(curproc->ofile[i]);
+  np->cwd = idup(curproc->cwd);
+  safestrcpy(np->name, curproc->name, sizeof(curproc->name));
+  np->timeslice = myproc()->timeslice; // New P4 Code
+  pid = np->pid;
+  acquire(&ptable.lock);
+  np->state = RUNNABLE;
+  release(&ptable.lock);
+  return pid;
 }
 
 // Exit the current process.  Does not return.
@@ -620,6 +618,7 @@ fork2(int slice)
     }
     np->sz = curproc->sz;
     np->parent = curproc;
+    np->timeslice = slice; // New P4 code
     *np->tf = *curproc->tf;
     // Clear %eax so that fork returns 0 in the child.
     np->tf->eax = 0;
@@ -632,8 +631,6 @@ fork2(int slice)
     acquire(&ptable.lock);
     np->state = RUNNABLE;
     release(&ptable.lock);
-
-    np->timeslice = slice; // New P4 code
 
     return pid;
 }
