@@ -74,6 +74,7 @@ myproc(void) {
 static struct proc*
 allocproc(void)
 {
+  struct cpu *c = mycpu();
   struct proc *p;
   char *sp;
 
@@ -89,6 +90,19 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+    if(c->head->state == UNUSED){
+        c->head = p;
+        p->next = c->tail;
+        p->prev = c->head;
+        //printf("Head: %s\n",c->head->name);
+    }
+    else {
+        c->tail->next = p;
+        p->prev = c->tail;
+        p->next = c->head;
+        c->head->prev = p;
+        c->tail = p;
+    }
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -316,33 +330,6 @@ wait(void)
 void
 scheduler(void)
 {
-  // struct proc *p = initproc; // **NEW_P4_CODE**
-  // struct cpu *c = mycpu(); // **NEW_P4_CODE**
-  // c->proc = 0; // **NEW_P4_CODE**
-  // c->head = p; // **NEW_P4_CODE**
-  
-  // c->proc = c->head; // **NEW_P4_CODE**
-  // c->head->next = c->tail; // **NEW_P4_CODE**
-
-  // for(;;) {
-  //   // Enable interrupts on this processor.
-  //   sti();
-  //   acquire(&ptable.lock); // OLD_CODE
-  //   while (c->head->state != RUNNABLE) { // **NEW_P4_CODE**
-  //     c->tail->next = c->head; // **NEW_P4_CODE**
-  //     c->head = c->head->next; // **NEW_P4_CODE**
-  //     c->tail = c->tail->next; // **NEW_P4_CODE**
-  //     c->tail->next = 0; // TODO: Should this be 0??
-  //   }
-  //   c->proc = c->head; // **NEW_P4_CODE**
-  //   switchuvm(c->head); // **NEW_P4_CODE**
-  //   c->head->state = RUNNING; // **NEW_P4_CODE**
-  //   swtch(&(c->scheduler), c->head->context); // **NEW_P4_CODE**
-  //   switchkvm(); // **NEW_P4_CODE**
-  //   release(&ptable.lock);
-  // }
-
-
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
