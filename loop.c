@@ -23,5 +23,26 @@ int main(void)
      trial->switches[i]);
     }
     free(trial);
+
+
+
+
+
+    // Actual loop.c code
+    loop(int sleepT) {
+        // First, sleep for sleepT ticks;
+
+        // Then, call a loop like this which loops on a huge workload (don't
+        // try to code and run any real programs like this! It is just for
+        // testing purpose of this project):
+        int i = 0, j = 0;
+        while (i < 800000000) {
+            j += i * j + 1;
+            i++;
+        }
+    }
+
+
+
   exit();
 }

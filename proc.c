@@ -112,7 +112,7 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
-  // P4 New   TODO: added tick initialization
+  // P4 New   TODO: add tick initialization
 
   return p;
 }
