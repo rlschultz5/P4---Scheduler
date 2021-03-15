@@ -74,7 +74,6 @@ myproc(void) {
 static struct proc*
 allocproc(void)
 {
-//  struct cpu *c = mycpu();
   struct proc *p;
   char *sp;
 
@@ -90,43 +89,19 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  if(p->parent == 0) { // P4 NEW CODE
-      p->timeslice = 1; // P4 NEW CODE
+  if(p->parent == 0) { // TODO: P4 NEW CODE
+      p->timeslice = 1; // TODO: P4 NEW CODE
+  } // TODO: P4 NEW CODE
+  else { // TODO: P4 NEW CODE
+      p->timeslice = p->parent->timeslice; // TODO: P4 NEW CODE
   } // P4 NEW CODE
-  else { // P4 NEW CODE
-      p->timeslice = p->parent->timeslice; // P4 NEW CODE
-  } // P4 NEW CODE
-  if(strncmp(p->name,"sh", 3)) { // P4 NEW CODE
-      mycpu()->head = p; // P4 NEW CODE
-      p->next = mycpu()->tail;
-      p->prev = mycpu()->tail;
-  } // P4 NEW CODE
-  else {
-      p->prev = mycpu()->tail;
-      p->next = mycpu()->head;
-      mycpu()->tail->next = p;
-      mycpu()->head->prev = p;
-      mycpu()->tail = p;
-//      mycpu()->tail->next = p;
-//      p->prev = mycpu()->tail;
-//      p->next = mycpu()->head;
-//      mycpu()->head->prev = p;
-//      mycpu()->tail = p;
-  }
-
-//    if(c->head->state == UNUSED){
-//        c->head = p;
-//        p->next = c->tail;
-//        p->prev = c->tail;
-//        //printf("Head: %s\n",c->head->name);
-//    }
-//    else {
-//        c->tail->next = p;
-//        p->prev = c->tail;
-//        p->next = c->head;
-//        c->head->prev = p;
-//        c->tail = p;
-//    }
+  if(p->pid != 1) { // TODO: P4 NEW CODE
+      p->prev = mycpu()->tail; // TODO: P4 NEW CODE
+      p->next = mycpu()->head; // TODO: P4 NEW CODE
+      mycpu()->tail->next = p; // TODO: P4 NEW CODE
+      mycpu()->head->prev = p; // TODO: P4 NEW CODE
+      mycpu()->tail = p; // TODO: P4 NEW CODE
+  } // TODO: P4 NEW CODE
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -165,7 +140,7 @@ userinit(void)
 
   p = allocproc();
   
-  initproc = p; // P4: Set first head as initproc
+//  initproc = p; // P4: Set first head as initproc
   if((p->pgdir = setupkvm()) == 0)
     panic("userinit: out of memory?");
   inituvm(p->pgdir, _binary_initcode_start, (int)_binary_initcode_size);
@@ -186,9 +161,14 @@ userinit(void)
   // run this process. the acquire forces the above
   // writes to be visible, and the lock is also needed
   // because the assignment might not be atomic.
+
   acquire(&ptable.lock);
 
   p->state = RUNNABLE;
+  mycpu()->head = p; // TODO: P4 NEW CODE
+  mycpu()->tail = p; // TODO: P4 NEW CODE
+  p->next = mycpu()->tail; // TODO: P4 NEW CODE
+  p->prev = mycpu()->tail; // TODO: P4 NEW CODE
 
   release(&ptable.lock);
 }
@@ -353,36 +333,41 @@ wait(void)
 void
 scheduler(void)
 {
-  struct proc *p;
   struct cpu *c = mycpu();
-  c->proc = 0;
-  
-  for(;;){
-    // Enable interrupts on this processor.
-    sti();
-
-    // Loop over process table looking for process to run.
-    acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
-
-      swtch(&(c->scheduler), p->context);
-      switchkvm();
-
+  c->proc = c->head;
+  for(;;) {
+      // Enable interrupts on this processor.
+      sti();
+      acquire(&ptable.lock);
+      if (c->proc->state != RUNNABLE) {
+          continue;
+      }
+          // Switch to chosen process.  It is the process's job
+          // to release ptable.lock and then reacquire it
+          // before jumping back to us.
+      else {
+          switchuvm(c->proc);
+          c->proc->state = RUNNING;
+          swtch(&(c->scheduler), c->proc->context);
+          switchkvm();
+      }
+      c->proc = c->proc->next;
+      release(&ptable.lock);
+  }
+    // Switch to chosen process.  It is the process's job
+    // to release ptable.lock and then reacquire it
+    // before jumping back to us.
+//          c->proc = p;
+//          switchuvm(p);
+//          p->state = RUNNING;
+//
+//          swtch(&(c->scheduler), p->context);
+//          switchkvm();
+//      }
       // Process is done running for now.
       // It should have changed its p->state before coming back.
-      c->proc = 0;
-    }
-    release(&ptable.lock);
-  }
+//    c->proc = c->proc->next;
+//  release(&ptable.lock);
 }
 
 // Enter scheduler.  Must hold only ptable.lock
@@ -671,6 +656,12 @@ getpinfo(struct pstat* pstat_getpinfo)
       safestrcpy(pstat_getpinfo->names[index], p->name, sizeof(p->name)); // TODO: COMMENT OUT!!!!!
     }
     index++;
+  }
+  int k = 0;
+  struct proc *point = mycpu()->head;
+  while(point != 0) {
+      safestrcpy(pstat_getpinfo->headtotail[k], point->name, sizeof(point->name));
+      point = point->next;
   }
   release(&ptable.lock);
   

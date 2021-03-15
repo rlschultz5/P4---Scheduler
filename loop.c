@@ -27,6 +27,12 @@ int main(void)
                        trial->compticks[i],trial->schedticks[i],trial->sleepticks[i],
                        trial->switches[i],trial->names[i]);
             }
+            int j = 0;
+            printf(0,"Head: ");
+            while (trial->headtotail[j] != 0){
+                printf(0,"%s ->", trial->headtotail[j]);
+                ++j;
+            }
             free(trial);
 
             char *args[2] = {"ls", 0};
@@ -42,7 +48,7 @@ int main(void)
             // parent
             int i = wait();
             printf(0,"wait: %d\n", i);
-            printf(0,"%d\n", getslice(3));
+            printf(0,"get slice of proc %d: %d\n", i, getslice(3));
             printf(0,"parent: child process exits\n");
         }
 
