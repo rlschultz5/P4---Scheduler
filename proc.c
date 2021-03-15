@@ -95,6 +95,7 @@ found:
   else { // TODO: P4 NEW CODE
       p->timeslice = p->parent->timeslice; // TODO: P4 NEW CODE
   } // P4 NEW CODE
+
   if(p->pid != 1) { // TODO: P4 NEW CODE
       p->prev = mycpu()->tail; // TODO: P4 NEW CODE
       p->next = mycpu()->head; // TODO: P4 NEW CODE
@@ -165,10 +166,6 @@ userinit(void)
   acquire(&ptable.lock);
 
   p->state = RUNNABLE;
-  mycpu()->head = p; // TODO: P4 NEW CODE
-  mycpu()->tail = p; // TODO: P4 NEW CODE
-  p->next = mycpu()->tail; // TODO: P4 NEW CODE
-  p->prev = mycpu()->tail; // TODO: P4 NEW CODE
 
   release(&ptable.lock);
 }
@@ -333,13 +330,25 @@ wait(void)
 void
 scheduler(void)
 {
+  cprintf("A\n"); // TODO:  REMOVE PRINT STATEMENT
   struct cpu *c = mycpu();
-  c->proc = c->head;
+  struct proc *p = ptable.proc;
+  acquire(&ptable.lock);
+  c->head = p; // TODO: P4 NEW CODE
+  c->tail = p; // TODO: P4 NEW CODE
+  c->head->next = c->tail; // TODO: P4 NEW CODE
+  c->head->prev = c->tail; // TODO: P4 NEW CODE
+  c->tail->next = c->head; // TODO: P4 NEW CODE
+  c->tail->prev = c->head; // TODO: P4 NEW CODE
+  c->proc = p;
+  cprintf("B\n"); // TODO:  REMOVE PRINT STATEMENT
+  release(&ptable.lock);
   for(;;) {
       // Enable interrupts on this processor.
       sti();
       acquire(&ptable.lock);
       if (c->proc->state != RUNNABLE) {
+          cprintf("C\n"); // TODO:  REMOVE PRINT STATEMENT
           continue;
       }
           // Switch to chosen process.  It is the process's job
@@ -348,11 +357,27 @@ scheduler(void)
       else {
           switchuvm(c->proc);
           c->proc->state = RUNNING;
+          cprintf("D\n"); // TODO:  REMOVE PRINT STATEMENT
           swtch(&(c->scheduler), c->proc->context);
           switchkvm();
       }
+      cprintf("E\n"); // TODO:  REMOVE PRINT STATEMENT
+      if(c->proc->pid == 1){
+          cprintf("user init ->"); // TODO:  REMOVE PRINT STATEMENT
+      }
+      if(c->proc->pid == 2){
+          cprintf("shell ->"); // TODO:  REMOVE PRINT STATEMENT
+      }
       c->proc = c->proc->next;
+      if(c->proc->pid == 1){
+          cprintf("user init\n"); // TODO:  REMOVE PRINT STATEMENT
+      }
+      if(c->proc->pid == 2){
+          cprintf("shell\n"); // TODO:  REMOVE PRINT STATEMENT
+      }
+      cprintf("F\n"); // TODO:  REMOVE PRINT STATEMENT
       release(&ptable.lock);
+      cprintf("G\n"); // TODO:  REMOVE PRINT STATEMENT
   }
     // Switch to chosen process.  It is the process's job
     // to release ptable.lock and then reacquire it
