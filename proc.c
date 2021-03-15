@@ -98,7 +98,12 @@ found:
 
   if(p->pid != 1) { // TODO: P4 NEW CODE
       if(p->pid == 2){
-          cprintf("shell is made\n"); // TODO:  REMOVE PRINT STATEMENT
+        cprintf("shell is made\n"); // TODO:  REMOVE PRINT STATEMENT
+          mycpu()->tail = p;
+          mycpu()->head->next = p;
+          mycpu()->head->prev = p;
+          p->prev = mycpu()->head;
+          p->next = mycpu()->head;
       }
       mycpu()->tail->next = p; // TODO: P4 NEW CODE
       mycpu()->head->prev = p; // TODO: P4 NEW CODE
@@ -114,6 +119,45 @@ found:
     return 0;
   }
   sp = p->kstack + KSTACKSIZE;
+  cprintf("PROC.C/ALLOCPROC()/AAA\n"); // TODO:  REMOVE PRINT STATEMENT
+  if(mycpu()->head->pid == 1){
+      cprintf("Head is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+  }
+//  if(mycpu()->head->pid == 2){
+//      cprintf("Head is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+//  }
+//    if(mycpu()->head->next->pid == 1){
+//        cprintf("Head.next is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    if(mycpu()->head->next-> pid == 2){
+//        cprintf("Head.next is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    if(mycpu()->head->prev->pid == 1){
+//        cprintf("Head.prev is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    if(mycpu()->head->next-> pid == 2){
+//        cprintf("Head.prev is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    if(mycpu()->tail->pid == 1){
+//        cprintf("Tail is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    if(mycpu()->tail->pid == 2){
+//        cprintf("Tail is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    if(mycpu()->tail->next->pid == 1){
+//        cprintf("Tail.next is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    if(mycpu()->tail->next->pid == 2){
+//        cprintf("Tail.next is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    if(mycpu()->tail->prev->pid == 1){
+//        cprintf("Tail.prev is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    if(mycpu()->tail->prev->pid == 2){
+//        cprintf("Tail.prev is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+//    }
+
+
 
   // Leave room for trap frame.
   sp -= sizeof *p->tf;
