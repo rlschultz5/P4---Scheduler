@@ -97,11 +97,14 @@ found:
   } // P4 NEW CODE
 
   if(p->pid != 1) { // TODO: P4 NEW CODE
-      p->prev = mycpu()->tail; // TODO: P4 NEW CODE
-      p->next = mycpu()->head; // TODO: P4 NEW CODE
+      if(p->pid == 2){
+          cprintf("shell is made\n"); // TODO:  REMOVE PRINT STATEMENT
+      }
       mycpu()->tail->next = p; // TODO: P4 NEW CODE
       mycpu()->head->prev = p; // TODO: P4 NEW CODE
       mycpu()->tail = p; // TODO: P4 NEW CODE
+      p->next = mycpu()->head; // TODO: P4 NEW CODE
+      p->prev = mycpu()->tail; // TODO: P4 NEW CODE
   } // TODO: P4 NEW CODE
   release(&ptable.lock);
 
