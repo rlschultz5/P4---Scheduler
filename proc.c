@@ -298,6 +298,9 @@ exit(void)
   // TODO: Trying to remove proc from linkedlist
   curproc->prev->next = curproc->next;
   curproc->next->prev = curproc->prev;
+  if(mycpu()->tail == curproc) {
+      mycpu()->tail = curproc->prev;
+  }
 //    if(curproc->pid >= 3) {
 //        cprintf("Curr proc: %d\n", curproc->pid); // TODO:  REMOVE PRINT STATEMENT
 //        cprintf("Curr.prev proc: %s\n", curproc->prev->name); // TODO:  REMOVE PRINT STATEMENT
@@ -435,16 +438,21 @@ sched(void)
   int intena;
   struct proc *p = myproc();
 
-  if(!holding(&ptable.lock))
-    panic("sched ptable.lock");
-  if(mycpu()->ncli != 1)
-    panic("sched locks");
-  if(p->state == RUNNING)
-    panic("sched running");
-  if(readeflags()&FL_IF)
-    panic("sched interruptible");
+  if(!holding(&ptable.lock)) {
+      panic("sched ptable.lock");
+  }
+  if(mycpu()->ncli != 1) {
+      panic("sched locks");
+  }
+  if(p->state == RUNNING) {
+      panic("sched running");
+  }
+  if(readeflags()&FL_IF) {
+      panic("sched interruptible");
+  }
   intena = mycpu()->intena;
   swtch(&p->context, mycpu()->scheduler);
+
   mycpu()->intena = intena;
 }
 

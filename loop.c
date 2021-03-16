@@ -32,7 +32,7 @@ int main(void)
 
             char *args[2] = {"ls", 0};
 //            printf(0,"%d\n", setslice(4,90));
-            printf(0,"%d\n", getslice(4));
+            printf(0,"%d\n", getslice(3));
             exec(args[0], args);
 
             // if child reached here, exec failed
