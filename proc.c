@@ -113,6 +113,19 @@ found:
           p->next = mycpu()->head; // TODO: P4 NEW CODE
       }
   } // TODO: P4 NEW CODE
+
+//    if(p->pid >= 3) { // TODO: P4 NEW CODE
+//        cprintf("Curr proc: %d\n", p->pid); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Curr.prev proc: %s\n", p->prev->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Curr.next proc: %s\n", p->next->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Previous proc: %s\n", p->prev->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Prev.prev proc: %s\n", p->prev->prev->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Prev.next proc: %d\n", p->prev->next->pid); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Next proc: %s\n", p->next->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Next.prev proc: %d\n", p->next->prev->pid); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Next.next proc: %s\n", p->next->next->name); // TODO:  REMOVE PRINT STATEMENT
+//    }
+
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -281,6 +294,31 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
+
+  // TODO: Trying to remove proc from linkedlist
+  curproc->prev->next = curproc->next;
+  curproc->next->prev = curproc->prev;
+//    if(curproc->pid >= 3) {
+//        cprintf("Curr proc: %d\n", curproc->pid); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Curr.prev proc: %s\n", curproc->prev->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Curr.next proc: %s\n", curproc->next->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Previous proc: %s\n", curproc->prev->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Prev.prev proc: %s\n", curproc->prev->prev->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Prev.next proc: %s\n", curproc->prev->next->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Next proc: %s\n", curproc->next->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Next.prev proc: %s\n", curproc->next->prev->name); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("Next.next proc: %s\n", curproc->next->next->name); // TODO:  REMOVE PRINT STATEMENT
+//    }
+//    struct proc *temp = mycpu()->head;
+//    cprintf("Head: "); // TODO:  REMOVE PRINT STATEMENT
+//    while(temp != 0) {
+//        cprintf("%s->", temp->name); // TODO:  REMOVE PRINT STATEMENT
+//        temp = temp->next;
+//    }
+//    cprintf("\n"); // TODO:  REMOVE PRINT STATEMENT
+
+
+
   sched();
   panic("zombie exit");
 }
@@ -363,13 +401,20 @@ scheduler(void)
       else {
           switchuvm(c->proc);
           c->proc->state = RUNNING;
-
-          cprintf("Previous proc: %s\n",p->prev->name); // TODO:  REMOVE PRINT STATEMENT
-          cprintf("Running proc: %s\n",p->name); // TODO:  REMOVE PRINT STATEMENT
-          cprintf("Next proc: %s\n",p->next->name); // TODO:  REMOVE PRINT STATEMENT
+          int after3 = 0;
+          if(p->pid == 3){
+              after3 = 1;
+          }
+//          cprintf("Previous proc: %s\n",p->prev->name); // TODO:  REMOVE PRINT STATEMENT
+//          cprintf("Running proc: %s\n",p->name); // TODO:  REMOVE PRINT STATEMENT
+//          cprintf("Next proc: %s\n",p->next->name); // TODO:  REMOVE PRINT STATEMENT
 
           c->proc->switches += 1; // TODO: P4 NEW CODE
           swtch(&(c->scheduler), c->proc->context);
+
+          if(after3 == 1) {
+              cprintf("made it here");
+          }
           switchkvm();
       }
       c->proc = c->proc->next;
