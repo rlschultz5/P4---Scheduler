@@ -50,6 +50,7 @@ struct proc {
   int compticks;               // number of compensation ticks this process has used
   int schedticks;              // total number of timer ticks this process has been scheduled
   int sleepticks;              // number of ticks during which this process was blocked
+  int wenttosleep;             // TODO: added to track if process should wake
   int switches;                // total num times this process has been scheduled
 
   struct proc *parent;         // Parent process

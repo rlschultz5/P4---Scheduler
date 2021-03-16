@@ -106,6 +106,7 @@ found:
           p->next = mycpu()->head;
       }
       else {
+//          struct proc *temp = mycpu()->tail;
           p->prev = mycpu()->tail; // TODO: P4 NEW CODE
           mycpu()->tail->next = p; // TODO: P4 NEW CODE
           mycpu()->tail = p; // TODO: P4 NEW CODE
@@ -317,6 +318,67 @@ wait(void)
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
+//          // TODO: CODE TO ADD WHEN PROCESS EXITS
+//          struct proc *temp = p->prev; // TODO:  P4 NEW CODE
+//          p->prev->next = p->next; // TODO:  P4 NEW CODE
+//          p->next->prev = p->prev; // TODO: // TODO:  P4 NEW CODE
+//          p->next = 0;
+//          p->prev = 0;
+
+          if (p->prev->pid == 1)
+              cprintf("prev-1\n");
+          if (p->prev->pid == 2)
+              cprintf("prev-2\n");
+          if (p->prev->pid == 3)
+              cprintf("prev-3\n");
+          if (p->prev->pid == 4)
+              cprintf("prev-4\n");
+          if (p->prev->pid == 5)
+              cprintf("prev-5\n");
+          if (p->prev->pid == 0)
+              cprintf("null\n");
+          if (p->next->pid == 1)
+              cprintf("next-1\n");
+          if (p->next->pid == 2)
+              cprintf("next-2\n");
+          if (p->next->pid == 3)
+              cprintf("next-3\n");
+          if (p->next->pid == 4)
+              cprintf("next-4\n");
+          if (p->next->pid == 5)
+              cprintf("next-5\n");
+
+
+          if (p->prev->next->pid == 1)
+              cprintf("prev->next-1\n");
+          if (p->prev->next->pid == 2)
+              cprintf("prev->next-2\n");
+          if (p->prev->next->pid == 3)
+              cprintf("prev->next-3\n");
+          if (p->prev->next->pid == 4)
+              cprintf("prev->next-4\n");
+          if (p->prev->next->pid == 5)
+              cprintf("prev->next-5\n");
+          if (p->prev->next->pid == 0)
+              cprintf("previous->next-null\n");
+          if (p->next->prev->pid == 1)
+              cprintf("next->previous-1\n");
+          if (p->next->prev->pid == 2)
+              cprintf("next->previous-2\n");
+          if (p->next->prev->pid == 3)
+              cprintf("next->previous-3\n");
+          if (p->next->prev->pid == 4)
+              cprintf("next->previous-4\n");
+          if (p->next->prev->pid == 5)
+              cprintf("next->previous-5\n");
+          if (p->next->prev->pid == 0)
+              cprintf("next->previous-null\n");
+
+
+
+
+
+          cprintf("Got here\n");
         release(&ptable.lock);
         return pid;
       }
@@ -370,6 +432,7 @@ scheduler(void)
       else {
           switchuvm(c->proc);
           c->proc->state = RUNNING;
+          c->proc->switches += 1; // TODO: P4 NEW CODE
 //          cprintf("D\n"); // TODO:  REMOVE PRINT STATEMENT
           swtch(&(c->scheduler), c->proc->context);
           switchkvm();
@@ -437,7 +500,7 @@ scheduler(void)
               cprintf("Tail.prev is: proc4\n"); // TODO:  REMOVE PRINT STATEMENT
           }
       }
-        // TODO: CODE TO ADD WHEN PROCESS EXITS
+//        // TODO: CODE TO ADD WHEN PROCESS EXITS
 //      struct proc *temp = curproc->prev; // TODO:  P4 NEW CODE
 //      curproc->prev->next = curproc->next; // TODO:  P4 NEW CODE
 //      curproc->next->prev = curproc->prev; // TODO: // TODO:  P4 NEW CODE
@@ -555,9 +618,13 @@ wakeup1(void *chan)
 {
   struct proc *p;
 
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == SLEEPING && p->chan == chan)
-      p->state = RUNNABLE;
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      // TODO: ADD ADDITIONAL CONDITION IF SHOULD BE WOKEN UP
+      if (p->state == SLEEPING && p->chan == chan) {
+          p->state = RUNNABLE;
+          p->switches += 1;
+      }
+  }
 }
 
 // Wake up all processes sleeping on chan.

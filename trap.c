@@ -37,20 +37,12 @@ void
 trap(struct trapframe *tf)
 {
   if(tf->trapno == T_SYSCALL){
-//    if(myproc()->killed) {
-//        struct proc *temp = curproc->prev; // TODO:  P4 NEW CODE
-//        curproc->prev->next = curproc->next; // TODO:  P4 NEW CODE
-//        curproc->next->prev = curproc->prev; // TODO: // TODO:  P4 NEW CODE
-//        exit();
-//    }
+    if(myproc()->killed)
+        exit();
     myproc()->tf = tf;
     syscall();
-//    if(myproc()->killed) {
-//        struct proc *temp = curproc->prev; // TODO:  P4 NEW CODE
-//        curproc->prev->next = curproc->next; // TODO:  P4 NEW CODE
-//        curproc->next->prev = curproc->prev; // TODO: // TODO:  P4 NEW CODE
-//        exit();
-//    }
+    if(myproc()->killed)
+        exit();
     return;
   }
 
@@ -59,6 +51,7 @@ trap(struct trapframe *tf)
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
+      myproc()->schedticks++;  // TODO: P4 NEW CODE
       wakeup(&ticks); // TODO: CHANGE THIS??
       release(&tickslock);
     }
