@@ -23,18 +23,10 @@ int main(void)
             printf(0,"Loop.c/C\n");
             for(int i = 0; i < 1; i++) {
                 printf(0,"inuse: %d  pid: %d  timeslice: %d  compticks: %d"
-                         "  schedticks: %d  sleepticks: %d  switches: %d"
-                         "  name: %s\n",
+                         "  schedticks: %d  sleepticks: %d  switches: %d\n",
                        trial->inuse[i],trial->pid[i],trial->timeslice[i],
                        trial->compticks[i],trial->schedticks[i],trial->sleepticks[i],
-                       trial->switches[i],trial->names[i]);
-            }
-            printf(0,"Loop.c/D\n");
-            int j = 0;
-            printf(0,"Head: ");
-            while (trial->headtotail[j] != 0){
-                printf(0,"%s ->", trial->headtotail[j]);
-                ++j;
+                       trial->switches[i]);
             }
             free(trial);
 

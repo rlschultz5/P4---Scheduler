@@ -98,7 +98,6 @@ found:
 
   if(p->pid != 1) { // TODO: P4 NEW CODE
       if(p->pid == 2){
-//        cprintf("shell is made\n"); // TODO:  REMOVE PRINT STATEMENT
           mycpu()->tail = p;
           mycpu()->head->next = p;
           mycpu()->head->prev = p;
@@ -122,10 +121,6 @@ found:
     return 0;
   }
   sp = p->kstack + KSTACKSIZE;
-//  cprintf("PROC.C/ALLOCPROC()/AAA\n"); // TODO:  REMOVE PRINT STATEMENT
-//  if(mycpu()->head->pid == 1){
-//      cprintf("Head is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-//  }
 
   // Leave room for trap frame.
   sp -= sizeof *p->tf;
@@ -318,67 +313,6 @@ wait(void)
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
-//          // TODO: CODE TO ADD WHEN PROCESS EXITS
-//          struct proc *temp = p->prev; // TODO:  P4 NEW CODE
-//          p->prev->next = p->next; // TODO:  P4 NEW CODE
-//          p->next->prev = p->prev; // TODO: // TODO:  P4 NEW CODE
-//          p->next = 0;
-//          p->prev = 0;
-
-          if (p->prev->pid == 1)
-              cprintf("prev-1\n");
-          if (p->prev->pid == 2)
-              cprintf("prev-2\n");
-          if (p->prev->pid == 3)
-              cprintf("prev-3\n");
-          if (p->prev->pid == 4)
-              cprintf("prev-4\n");
-          if (p->prev->pid == 5)
-              cprintf("prev-5\n");
-          if (p->prev->pid == 0)
-              cprintf("null\n");
-          if (p->next->pid == 1)
-              cprintf("next-1\n");
-          if (p->next->pid == 2)
-              cprintf("next-2\n");
-          if (p->next->pid == 3)
-              cprintf("next-3\n");
-          if (p->next->pid == 4)
-              cprintf("next-4\n");
-          if (p->next->pid == 5)
-              cprintf("next-5\n");
-
-
-          if (p->prev->next->pid == 1)
-              cprintf("prev->next-1\n");
-          if (p->prev->next->pid == 2)
-              cprintf("prev->next-2\n");
-          if (p->prev->next->pid == 3)
-              cprintf("prev->next-3\n");
-          if (p->prev->next->pid == 4)
-              cprintf("prev->next-4\n");
-          if (p->prev->next->pid == 5)
-              cprintf("prev->next-5\n");
-          if (p->prev->next->pid == 0)
-              cprintf("previous->next-null\n");
-          if (p->next->prev->pid == 1)
-              cprintf("next->previous-1\n");
-          if (p->next->prev->pid == 2)
-              cprintf("next->previous-2\n");
-          if (p->next->prev->pid == 3)
-              cprintf("next->previous-3\n");
-          if (p->next->prev->pid == 4)
-              cprintf("next->previous-4\n");
-          if (p->next->prev->pid == 5)
-              cprintf("next->previous-5\n");
-          if (p->next->prev->pid == 0)
-              cprintf("next->previous-null\n");
-
-
-
-
-
-          cprintf("Got here\n");
         release(&ptable.lock);
         return pid;
       }
@@ -406,7 +340,6 @@ wait(void)
 void
 scheduler(void)
 {
-//  cprintf("A\n"); // TODO:  REMOVE PRINT STATEMENT
   struct cpu *c = mycpu();
   struct proc *p = ptable.proc;
   acquire(&ptable.lock);
@@ -417,14 +350,12 @@ scheduler(void)
   c->tail->next = c->head; // TODO: P4 NEW CODE
   c->tail->prev = c->head; // TODO: P4 NEW CODE
   c->proc = p;
-//  cprintf("B\n"); // TODO:  REMOVE PRINT STATEMENT
   release(&ptable.lock);
   for(;;) {
       // Enable interrupts on this processor.
       sti();
       acquire(&ptable.lock);
       if (c->proc->state != RUNNABLE) {
-//          cprintf("C\n"); // TODO:  REMOVE PRINT STATEMENT
       }
           // Switch to chosen process.  It is the process's job
           // to release ptable.lock and then reacquire it
@@ -432,85 +363,17 @@ scheduler(void)
       else {
           switchuvm(c->proc);
           c->proc->state = RUNNING;
+
+          cprintf("Previous proc: %s\n",p->prev->name); // TODO:  REMOVE PRINT STATEMENT
+          cprintf("Running proc: %s\n",p->name); // TODO:  REMOVE PRINT STATEMENT
+          cprintf("Next proc: %s\n",p->next->name); // TODO:  REMOVE PRINT STATEMENT
+
           c->proc->switches += 1; // TODO: P4 NEW CODE
-//          cprintf("D\n"); // TODO:  REMOVE PRINT STATEMENT
           swtch(&(c->scheduler), c->proc->context);
           switchkvm();
       }
-
-
-
-      if(c->proc->pid == 4){
-          cprintf("proc4\n"); // TODO:  REMOVE PRINT STATEMENT
-          if(mycpu()->head->pid == 1){
-              cprintf("Head is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->proc->next->pid == 1){
-              cprintf("proc4.next is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->proc->next-> pid == 2){
-              cprintf("proc4.next is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->proc->next-> pid == 3){
-              cprintf("proc4.next is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->proc->prev->pid == 1){
-              cprintf("proc4.prev is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->proc->prev-> pid == 2){
-              cprintf("proc4.prev is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->proc->prev-> pid == 3){
-              cprintf("proc4.prev is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->pid == 1){
-              cprintf("Tail is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->pid == 2){
-              cprintf("Tail is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->pid == 3){
-              cprintf("Tail is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->pid == 4){
-              cprintf("Tail is: proc4\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->next->pid == 1){
-              cprintf("Tail.next is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->next->pid == 2){
-              cprintf("Tail.next is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->next->pid == 3){
-              cprintf("Tail.next is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->next->pid == 4){
-              cprintf("Tail.next is: proc4\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->prev->pid == 1){
-              cprintf("Tail.prev is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->prev->pid == 2){
-              cprintf("Tail.prev is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->prev->pid == 3){
-              cprintf("Tail.prev is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-          if(mycpu()->tail->prev->pid == 4){
-              cprintf("Tail.prev is: proc4\n"); // TODO:  REMOVE PRINT STATEMENT
-          }
-      }
-//        // TODO: CODE TO ADD WHEN PROCESS EXITS
-//      struct proc *temp = curproc->prev; // TODO:  P4 NEW CODE
-//      curproc->prev->next = curproc->next; // TODO:  P4 NEW CODE
-//      curproc->next->prev = curproc->prev; // TODO: // TODO:  P4 NEW CODE
-
-
-
-//      cprintf("F\n"); // TODO:  REMOVE PRINT STATEMENT
       c->proc = c->proc->next;
       release(&ptable.lock);
-//      cprintf("G\n"); // TODO:  REMOVE PRINT STATEMENT
   }
 }
 
@@ -617,6 +480,9 @@ static void
 wakeup1(void *chan)
 {
   struct proc *p;
+
+  //TODO: ADD IF CHAN == INIT && SLEEPING {THEN WAKE}
+//  if(chan->pid)
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
       // TODO: ADD ADDITIONAL CONDITION IF SHOULD BE WOKEN UP
@@ -801,15 +667,8 @@ getpinfo(struct pstat* pstat_getpinfo)
       pstat_getpinfo->schedticks[index] = p->schedticks;  // total number of timer ticks this process has been scheduled
       pstat_getpinfo->sleepticks[index] = p->sleepticks; // number of ticks during which this process was blocked
       pstat_getpinfo->switches[index] = p->switches;  // total num times this process has been scheduled
-      safestrcpy(pstat_getpinfo->names[index], p->name, sizeof(p->name)); // TODO: COMMENT OUT!!!!!
     }
     index++;
-  }
-  int k = 0;
-  struct proc *point = mycpu()->head;
-  while(point != 0) {
-      safestrcpy(pstat_getpinfo->headtotail[k], point->name, sizeof(point->name));
-      point = point->next;
   }
   release(&ptable.lock);
   
