@@ -3,11 +3,22 @@
 #include "user.h"
 #include "pstat.h"
 
+
 // schedtest spawns two children processes, each running the loop application.
 // One child A is given initial timeslice length of sliceA and runs loop
 // sleepA; the other B is given initial timeslice length of sliceB and runs
 // loop sleepB.
-    int main() {
+    int main(int argc, char *argv[]) {
+      if (argc != 6){
+        printf(0,"Invalid input\n");
+        exit();
+      }
+      int sliceA = atoi(argv[1]);
+      int sleepA = atoi(argv[2]);
+      int sliceB = atoi(argv[3]);
+      int sleepB = atoi(argv[4]);
+      int sleepParent = atoi(argv[5]);
+      printf(0,"input: %d, %d, %d, %d, %d\n",sliceA,sleepA,sliceB,sleepB,sleepParent);
     // (int sliceA, int sleepA, int sliceB, int sleepB, int sleepParent) {
     // Specifically, the parent process calls fork2() and exec() for the two
     // children loop processes,A before B,with the specified initial timeslice;
