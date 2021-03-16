@@ -98,18 +98,20 @@ found:
 
   if(p->pid != 1) { // TODO: P4 NEW CODE
       if(p->pid == 2){
-        cprintf("shell is made\n"); // TODO:  REMOVE PRINT STATEMENT
+//        cprintf("shell is made\n"); // TODO:  REMOVE PRINT STATEMENT
           mycpu()->tail = p;
           mycpu()->head->next = p;
           mycpu()->head->prev = p;
           p->prev = mycpu()->head;
           p->next = mycpu()->head;
       }
-      mycpu()->tail->next = p; // TODO: P4 NEW CODE
-      mycpu()->head->prev = p; // TODO: P4 NEW CODE
-      mycpu()->tail = p; // TODO: P4 NEW CODE
-      p->next = mycpu()->head; // TODO: P4 NEW CODE
-      p->prev = mycpu()->tail; // TODO: P4 NEW CODE
+      else {
+          p->prev = mycpu()->tail; // TODO: P4 NEW CODE
+          mycpu()->tail->next = p; // TODO: P4 NEW CODE
+          mycpu()->tail = p; // TODO: P4 NEW CODE
+          mycpu()->head->prev = mycpu()->tail; // TODO: P4 NEW CODE
+          p->next = mycpu()->head; // TODO: P4 NEW CODE
+      }
   } // TODO: P4 NEW CODE
   release(&ptable.lock);
 
@@ -119,45 +121,10 @@ found:
     return 0;
   }
   sp = p->kstack + KSTACKSIZE;
-  cprintf("PROC.C/ALLOCPROC()/AAA\n"); // TODO:  REMOVE PRINT STATEMENT
-  if(mycpu()->head->pid == 1){
-      cprintf("Head is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-  }
-//  if(mycpu()->head->pid == 2){
-//      cprintf("Head is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+//  cprintf("PROC.C/ALLOCPROC()/AAA\n"); // TODO:  REMOVE PRINT STATEMENT
+//  if(mycpu()->head->pid == 1){
+//      cprintf("Head is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
 //  }
-//    if(mycpu()->head->next->pid == 1){
-//        cprintf("Head.next is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-//    if(mycpu()->head->next-> pid == 2){
-//        cprintf("Head.next is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-//    if(mycpu()->head->prev->pid == 1){
-//        cprintf("Head.prev is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-//    if(mycpu()->head->next-> pid == 2){
-//        cprintf("Head.prev is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-//    if(mycpu()->tail->pid == 1){
-//        cprintf("Tail is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-//    if(mycpu()->tail->pid == 2){
-//        cprintf("Tail is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-//    if(mycpu()->tail->next->pid == 1){
-//        cprintf("Tail.next is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-//    if(mycpu()->tail->next->pid == 2){
-//        cprintf("Tail.next is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-//    if(mycpu()->tail->prev->pid == 1){
-//        cprintf("Tail.prev is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-//    if(mycpu()->tail->prev->pid == 2){
-//        cprintf("Tail.prev is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
-//    }
-
-
 
   // Leave room for trap frame.
   sp -= sizeof *p->tf;
@@ -377,7 +344,7 @@ wait(void)
 void
 scheduler(void)
 {
-  cprintf("A\n"); // TODO:  REMOVE PRINT STATEMENT
+//  cprintf("A\n"); // TODO:  REMOVE PRINT STATEMENT
   struct cpu *c = mycpu();
   struct proc *p = ptable.proc;
   acquire(&ptable.lock);
@@ -388,15 +355,14 @@ scheduler(void)
   c->tail->next = c->head; // TODO: P4 NEW CODE
   c->tail->prev = c->head; // TODO: P4 NEW CODE
   c->proc = p;
-  cprintf("B\n"); // TODO:  REMOVE PRINT STATEMENT
+//  cprintf("B\n"); // TODO:  REMOVE PRINT STATEMENT
   release(&ptable.lock);
   for(;;) {
       // Enable interrupts on this processor.
       sti();
       acquire(&ptable.lock);
       if (c->proc->state != RUNNABLE) {
-          cprintf("C\n"); // TODO:  REMOVE PRINT STATEMENT
-          continue;
+//          cprintf("C\n"); // TODO:  REMOVE PRINT STATEMENT
       }
           // Switch to chosen process.  It is the process's job
           // to release ptable.lock and then reacquire it
@@ -404,42 +370,85 @@ scheduler(void)
       else {
           switchuvm(c->proc);
           c->proc->state = RUNNING;
-          cprintf("D\n"); // TODO:  REMOVE PRINT STATEMENT
+//          cprintf("D\n"); // TODO:  REMOVE PRINT STATEMENT
           swtch(&(c->scheduler), c->proc->context);
           switchkvm();
       }
-      cprintf("E\n"); // TODO:  REMOVE PRINT STATEMENT
-      if(c->proc->pid == 1){
-          cprintf("user init ->"); // TODO:  REMOVE PRINT STATEMENT
+
+
+
+      if(c->proc->pid == 4){
+          cprintf("proc4\n"); // TODO:  REMOVE PRINT STATEMENT
+          if(mycpu()->head->pid == 1){
+              cprintf("Head is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->proc->next->pid == 1){
+              cprintf("proc4.next is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->proc->next-> pid == 2){
+              cprintf("proc4.next is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->proc->next-> pid == 3){
+              cprintf("proc4.next is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->proc->prev->pid == 1){
+              cprintf("proc4.prev is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->proc->prev-> pid == 2){
+              cprintf("proc4.prev is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->proc->prev-> pid == 3){
+              cprintf("proc4.prev is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->pid == 1){
+              cprintf("Tail is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->pid == 2){
+              cprintf("Tail is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->pid == 3){
+              cprintf("Tail is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->pid == 4){
+              cprintf("Tail is: proc4\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->next->pid == 1){
+              cprintf("Tail.next is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->next->pid == 2){
+              cprintf("Tail.next is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->next->pid == 3){
+              cprintf("Tail.next is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->next->pid == 4){
+              cprintf("Tail.next is: proc4\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->prev->pid == 1){
+              cprintf("Tail.prev is: initproc\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->prev->pid == 2){
+              cprintf("Tail.prev is: shell\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->prev->pid == 3){
+              cprintf("Tail.prev is: proc3\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
+          if(mycpu()->tail->prev->pid == 4){
+              cprintf("Tail.prev is: proc4\n"); // TODO:  REMOVE PRINT STATEMENT
+          }
       }
-      if(c->proc->pid == 2){
-          cprintf("shell ->"); // TODO:  REMOVE PRINT STATEMENT
-      }
+        // TODO: CODE TO ADD WHEN PROCESS EXITS
+//      struct proc *temp = curproc->prev; // TODO:  P4 NEW CODE
+//      curproc->prev->next = curproc->next; // TODO:  P4 NEW CODE
+//      curproc->next->prev = curproc->prev; // TODO: // TODO:  P4 NEW CODE
+
+
+
+//      cprintf("F\n"); // TODO:  REMOVE PRINT STATEMENT
       c->proc = c->proc->next;
-      if(c->proc->pid == 1){
-          cprintf("user init\n"); // TODO:  REMOVE PRINT STATEMENT
-      }
-      if(c->proc->pid == 2){
-          cprintf("shell\n"); // TODO:  REMOVE PRINT STATEMENT
-      }
-      cprintf("F\n"); // TODO:  REMOVE PRINT STATEMENT
       release(&ptable.lock);
-      cprintf("G\n"); // TODO:  REMOVE PRINT STATEMENT
+//      cprintf("G\n"); // TODO:  REMOVE PRINT STATEMENT
   }
-    // Switch to chosen process.  It is the process's job
-    // to release ptable.lock and then reacquire it
-    // before jumping back to us.
-//          c->proc = p;
-//          switchuvm(p);
-//          p->state = RUNNING;
-//
-//          swtch(&(c->scheduler), p->context);
-//          switchkvm();
-//      }
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-//    c->proc = c->proc->next;
-//  release(&ptable.lock);
 }
 
 // Enter scheduler.  Must hold only ptable.lock
