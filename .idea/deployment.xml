@@ -5,7 +5,7 @@
       <paths name="CS Lab">
         <serverdata>
           <mappings>
-            <mapping deploy="/CS537_OS/Project_4/xv6" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/CS537_OS/Project_4/src" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
