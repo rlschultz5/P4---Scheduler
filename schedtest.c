@@ -19,6 +19,37 @@
       int sleepB = atoi(argv[4]);
       int sleepParent = atoi(argv[5]);
       printf(0,"input: %d, %d, %d, %d, %d\n",sliceA,sleepA,sliceB,sleepB,sleepParent);
+      struct pstat *childA = malloc(sizeof (struct pstat));
+      struct pstat *childB = malloc(sizeof (struct pstat));
+      int fork_status = fork2(sliceA);
+      if(fork_status == 0){
+        char *arg[] = {"loop",argv[2],0};
+        printf(0,"Before A loop\n");
+        exec("loop",arg);
+        printf(0,"ChildA PID: %i\n",getpid());
+        printf(0,"After B loop\n");
+        
+      }
+      else{
+        int fork_status2 = fork2(sliceB);
+        if(fork_status2 == 0){
+          char *arg2[] = {"loop",argv[4],0};
+          printf(0,"Before B loop\n");
+          exec("loop",arg2);
+          printf(0,"After B loop\n");
+          printf(0,"ChildB PID: %i\n",getpid());
+          
+        }
+        else{
+          sleep(sleepParent);
+          getpinfo(childA);
+          getpinfo(childB);
+          printf(1, "Compticks: %d %d\n", childA->compticks, childB->compticks);
+          wait();
+          wait();
+          printf(0,"After waits\n");
+        }
+      }
     // (int sliceA, int sleepA, int sliceB, int sleepB, int sleepParent) {
     // Specifically, the parent process calls fork2() and exec() for the two
     // children loop processes,A before B,with the specified initial timeslice;
