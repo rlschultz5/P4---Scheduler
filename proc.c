@@ -95,7 +95,7 @@ found:
   p->sleepticks = 0; // NEW P4 CODE
   p->switches = 0; // NEW P4 CODE
   p->currcompticks = 0; // NEW P4 CODE
-  p->issleeping = 0;
+  p->issleeping = 0; // NEW P4 CODE
   if(p->parent == 0) { // NEW P4 CODE
       p->timeslice = 1; // NEW P4 CODE
   } // NEW P4 CODE
