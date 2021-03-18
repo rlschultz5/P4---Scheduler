@@ -83,6 +83,7 @@ int main(int argc, char *argv[]) {
             char *arg[] = {"loop", argv[2], 0};
 //          printf(0, "Before A loop\n");
 //            printf(0, "ChildA PID: %d\n", getpid());
+//            printf(0,"THIS IS CHILD A SLEEP:   %s\n", argv[2]);
             exec("loop", arg);
 //            printf(0, "After B loop\n");
 
@@ -93,6 +94,7 @@ int main(int argc, char *argv[]) {
                     char *arg2[] = {"loop", argv[4], 0};
 //                  printf(0, "Before B loop\n");
 //                    printf(0, "ChildB PID: %d\n", getpid());
+//                    printf(0,"THIS IS CHILD B SLEEP:   %s\n", argv[4]);
                     exec("loop", arg2);
 //                    printf(0, "After B loop\n");
 

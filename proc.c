@@ -430,14 +430,16 @@ scheduler(void)
 //          cprintf("Running proc: %s\n",p->name); // TODO:  REMOVE PRINT STATEMENT
 //          cprintf("Next proc: %s\n",p->next->name); // TODO:  REMOVE PRINT STATEMENT
 //          if((c->proc->pid == 4) || (c->proc->pid == 5)) {
-//              cprintf("\nCompTicks for %d: %d\n", c->proc->pid, c->proc->compticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("\nPROCESS::: %d\n", c->proc->pid); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("CompTicks for %d: %d\n", c->proc->pid, c->proc->compticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("currcompticks for %d: %d\n", c->proc->pid, c->proc->currcompticks); // TODO:  REMOVE PRINT STATEMENT
 //              cprintf("Schedticks for %d: %d\n", c->proc->pid, c->proc->schedticks); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("Switches for %d: %d\n\n", c->proc->pid, c->proc->switches); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("Sleepticks for %d: %d\n\n", c->proc->pid, c->proc->sleepticks); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("Sleepfor for %d: %d\n\n", c->proc->pid, c->proc->sleepfor); // TODO:  REMOVE PRINT STATEMENT
-//
+//              cprintf("Sleepticks for %d: %d\n", c->proc->pid, c->proc->sleepticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("Sleepfor for %d: %d\n", c->proc->pid, c->proc->sleepfor); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("Switches for %d: %d\n", c->proc->pid, c->proc->switches); // TODO:  REMOVE PRINT STATEMENT
 //          }
           c->proc->switches += 1; // NEW P4 CODE
+          myproc()->remainingslice = myproc()->timeslice; // NEW P4 CODE
           swtch(&(c->scheduler), c->proc->context);
 
           switchkvm();
@@ -484,7 +486,6 @@ yield(void)
 {
   acquire(&ptable.lock);  //DOC: yieldlock
   myproc()->currcompticks = 0; // NEW P4 CODE
-  myproc()->remainingslice = myproc()->timeslice; // NEW P4 CODE
   myproc()->state = RUNNABLE;
   sched();
   release(&ptable.lock);
@@ -534,15 +535,19 @@ sleep(void *chan, struct spinlock *lk)
     acquire(&ptable.lock);  //DOC: sleeplock1
     release(lk);
   }
+  if(myproc()->state == RUNNABLE){ // TODO: TESTING RESESTING CURRCOMPTICKS
+      myproc()->currcompticks = 0; // TODO: TESTING RESESTING CURRCOMPTICKS
+  } // TODO: TESTING RESESTING CURRCOMPTICKS
+
   // Go to sleep.
   p->chan = chan;
   p->state = SLEEPING;
   // NEW P4 CODE: Total sleepticks incremented
-  p->sleepticks++;
+//  p->sleepticks++;
   // NEW P4 CODE: Full timeslice when it wakes
   p->remainingslice = p->timeslice;
   // NEW P4 CODE: Starts incrementing compticks
-  p->currcompticks++;
+//  p->currcompticks++;
   // TODO: Is all this ^^ correct??
 
   sched();
@@ -565,23 +570,32 @@ wakeup1(void *chan)
 {
   struct proc *p;
 
-  // TODO: I added a lot here but I think these wakeups
-  //  were waiting for I/O or something so maybe don't touch??
-
-//  //TODO: ADD IF CHAN == INIT && SLEEPING {THEN WAKE}
+//  //TODO: IF CHAN == INIT && SLEEPING {THEN WAKE}??
   if(chan == initproc) {// NEW P4 CODE: Is this correct??
       //                     maybe initproc.chan ??
       initproc->state = RUNNABLE; // NEW P4 CODE
   } // NEW P4 CODE
-
+    // TODO: IS THIS CORRECT??
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-      // NEW P4 CODE // NEW P4 CODE
-      if((p->issleeping == 1) && (ticks >= p->wakeuptime)) { // NEW P4 CODE
-          p->state = RUNNABLE; // NEW P4 CODE
-          p->issleeping = 0; // NEW P4 CODE
+      if(p->issleeping == 1) {
+          if(ticks >= p->wakeuptime) { // NEW P4 CODE
+//              cprintf("pid:  %d   | ticks:  %d   | wakeuptime:  %d\n", p->pid,ticks,p->wakeuptime);
+              p->currcompticks = ticks - p->startsleepticks;
+              p->sleepticks += p->currcompticks;
+              p->state = RUNNABLE; // NEW P4 CODE
+              p->issleeping = 0; // NEW P4 CODE
+          }
+          else {
+//              cprintf("pid:  %d   | ticks:  %d   | wakeuptime:  %d\n", p->pid,ticks,p->wakeuptime);
+//              p->sleepticks++;
+//              p->currcompticks++;
+//              cprintf("pid:  %d   | currcompticks:  %d   | sleepticks:  %d\n", p->pid,p->currcompticks,p->sleepticks);
+}
       } // NEW P4 CODE
-//      else if (p->state == SLEEPING && p->issleeping == 0 && p->chan == chan) { // NEW P4 CODE: I added the ==0 part
-      else if (p->state == SLEEPING && p->chan == chan) {
+
+      // TODO: I THINK THIS CHECK STILL NEEDS TO BE HERE TOO BUT ADDED "ISSLEEPING" CHECK
+      else if (p->state == SLEEPING && p->issleeping == 0 && p->chan == chan) { // NEW P4 CODE: I added the ==0 part
+//      else if (p->state == SLEEPING && p->chan == chan) {
           p->state = RUNNABLE;
       }
   }

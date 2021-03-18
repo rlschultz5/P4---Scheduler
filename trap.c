@@ -51,6 +51,7 @@ trap(struct trapframe *tf)
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
+      myproc()->schedticks++; // NEW P4 CODE
       wakeup(&ticks); // TODO: CHANGE THIS??
       release(&tickslock);
 
@@ -105,15 +106,19 @@ trap(struct trapframe *tf)
   // If interrupts were on while locks held, would need to check nlock.
   if(myproc() && myproc()->state == RUNNING &&
      tf->trapno == T_IRQ0+IRQ_TIMER) {
-      myproc()->schedticks++; // NEW P4 CODE
       // TODO: if proc is out of ticks
-      if ((myproc()->remainingslice + myproc()->currcompticks) == 0) { // NEW P4 CODE
+      if ((myproc()->remainingslice + myproc()->currcompticks) <= 0) { // NEW P4 CODE
           yield();
       } // NEW P4 CODE
       else { // NEW P4 CODE
           if(myproc()->currcompticks > 0) { // NEW P4 CODE
+//              cprintf("BBBBBB\n\n\n\n\n\n\n\n\nBBBBBBBB");
+//              cprintf("currcompticks for %d: %d\n\n", myproc()->pid, myproc()->currcompticks); // TODO:  REMOVE PRINT STATEMENT
               myproc()->currcompticks--; // NEW P4 CODE
               myproc()->compticks++;
+//              cprintf("dec currcompticks for %d: %d\n\n", myproc()->pid, myproc()->currcompticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("inc compticks for %d: %d\n\n", myproc()->pid, myproc()->compticks); // TODO:  REMOVE PRINT STATEMENT
+
           } // NEW P4 CODE
           else { // NEW P4 CODE
               myproc()->remainingslice--; // NEW P4 CODE

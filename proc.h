@@ -54,6 +54,7 @@ struct proc {
   int sleepticks;              // number of ticks during which this process was blocked
   int sleepfor;                // NEW P4 CODE: added to track if process should wake
   int wakeuptime;               // NEW P4 CODE: tick count to wake up at
+  int startsleepticks;
   int issleeping;
   int switches;                // total num times this process has been scheduled
 
