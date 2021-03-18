@@ -67,6 +67,9 @@ sys_sleep(void)
     return -1;
   acquire(&tickslock);
   ticks0 = ticks;
+  myproc()->sleepfor = n; // NEW P4 CODE
+  myproc()->issleeping = 1; // NEW P4 CODE
+  myproc()->wakeuptime = ticks0 + n;
   while(ticks - ticks0 < n){
     if(myproc()->killed){
       release(&tickslock);

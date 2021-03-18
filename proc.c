@@ -89,30 +89,39 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  if(p->parent == 0) { // TODO: P4 NEW CODE
-      p->timeslice = 1; // TODO: P4 NEW CODE
-  } // TODO: P4 NEW CODE
-  else { // TODO: P4 NEW CODE
-      p->timeslice = p->parent->timeslice; // TODO: P4 NEW CODE
-  } // P4 NEW CODE
+  // NEW P4 CODE: Initialized custom fields
+  p->compticks = 0; // NEW P4 CODE
+  p->schedticks = 0; // NEW P4 CODE
+  p->sleepticks = 0; // NEW P4 CODE
+  p->switches = 0; // NEW P4 CODE
+  p->currcompticks = 0; // NEW P4 CODE
+  p->issleeping = 0;
+  if(p->parent == 0) { // NEW P4 CODE
+      p->timeslice = 1; // NEW P4 CODE
+  } // NEW P4 CODE
+  else { // NEW P4 CODE
+      p->timeslice = p->parent->timeslice; // NEW P4 CODE
+  } // NEW P4 CODE
+  p->remainingslice = p->timeslice; // NEW P4 CODE
 
-  if(p->pid != 1) { // TODO: P4 NEW CODE
-      if(p->pid == 2){
-          mycpu()->tail = p;
-          mycpu()->head->next = p;
-          mycpu()->head->prev = p;
-          p->prev = mycpu()->head;
-          p->next = mycpu()->head;
-      }
-      else {
-//          struct proc *temp = mycpu()->tail;
-          p->prev = mycpu()->tail; // TODO: P4 NEW CODE
-          mycpu()->tail->next = p; // TODO: P4 NEW CODE
-          mycpu()->tail = p; // TODO: P4 NEW CODE
-          mycpu()->head->prev = mycpu()->tail; // TODO: P4 NEW CODE
-          p->next = mycpu()->head; // TODO: P4 NEW CODE
-      }
-  } // TODO: P4 NEW CODE
+  // NEW P4 CODE:
+  //  Insert shell & the rest in Linked List
+  if(p->pid != 1) { // NEW P4 CODE
+      if(p->pid == 2){ // NEW P4 CODE
+          mycpu()->tail = p; // NEW P4 CODE
+          mycpu()->head->next = p; // NEW P4 CODE
+          mycpu()->head->prev = p; // NEW P4 CODE
+          p->prev = mycpu()->head; // NEW P4 CODE
+          p->next = mycpu()->head; // NEW P4 CODE
+      } // NEW P4 CODE
+      else { // NEW P4 CODE
+          p->prev = mycpu()->tail; // NEW P4 CODE
+          mycpu()->tail->next = p; // NEW P4 CODE
+          mycpu()->tail = p; // NEW P4 CODE
+          mycpu()->head->prev = mycpu()->tail; // NEW P4 CODE
+          p->next = mycpu()->head; // NEW P4 CODE
+      } // NEW P4 CODE
+  } // NEW P4 CODE
 
 //    if(p->pid >= 3) { // TODO: P4 NEW CODE
 //        cprintf("Curr proc: %d\n", p->pid); // TODO:  REMOVE PRINT STATEMENT
@@ -148,8 +157,6 @@ found:
   p->context = (struct context*)sp;
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
-
-  // P4 New   TODO: add tick initialization
 
   return p;
 }
@@ -295,12 +302,13 @@ exit(void)
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
 
-  // TODO: Trying to remove proc from linkedlist
-  curproc->prev->next = curproc->next;
-  curproc->next->prev = curproc->prev;
-  if(mycpu()->tail == curproc) {
-      mycpu()->tail = curproc->prev;
-  }
+  // NEW P4 CODE
+  //    Removing proc from linked list
+  curproc->prev->next = curproc->next;// NEW P4 CODE
+  curproc->next->prev = curproc->prev;// NEW P4 CODE
+  if(mycpu()->tail == curproc) {// NEW P4 CODE
+      mycpu()->tail = curproc->prev;// NEW P4 CODE
+  }// NEW P4 CODE
 //    if(curproc->pid >= 3) {
 //        cprintf("Curr proc: %d\n", curproc->pid); // TODO:  REMOVE PRINT STATEMENT
 //        cprintf("Curr.prev proc: %s\n", curproc->prev->name); // TODO:  REMOVE PRINT STATEMENT
@@ -353,6 +361,16 @@ wait(void)
         p->parent = 0;
         p->name[0] = 0;
         p->killed = 0;
+        // NEW P4 CODE: Setting all added fields to 0
+        p->prev = 0; // NEW P4 CODE
+        p->next = 0; // NEW P4 CODE
+        p->timeslice = 0; // NEW P4 CODE
+        p->remainingslice = 0; // NEW P4 CODE
+        p->compticks = 0; // NEW P4 CODE
+        p->currcompticks = 0; // NEW P4 CODE
+        p->schedticks = 0; // NEW P4 CODE
+        p->sleepticks = 0; // NEW P4 CODE
+        p->switches = 0; // NEW P4 CODE
         p->state = UNUSED;
         release(&ptable.lock);
         return pid;
@@ -384,12 +402,12 @@ scheduler(void)
   struct cpu *c = mycpu();
   struct proc *p = ptable.proc;
   acquire(&ptable.lock);
-  c->head = p; // TODO: P4 NEW CODE
-  c->tail = p; // TODO: P4 NEW CODE
-  c->head->next = c->tail; // TODO: P4 NEW CODE
-  c->head->prev = c->tail; // TODO: P4 NEW CODE
-  c->tail->next = c->head; // TODO: P4 NEW CODE
-  c->tail->prev = c->head; // TODO: P4 NEW CODE
+  c->head = p; // NEW P4 CODE
+  c->tail = p; // NEW P4 CODE
+  c->head->next = c->tail; // NEW P4 CODE
+  c->head->prev = c->tail; // NEW P4 CODE
+  c->tail->next = c->head; // NEW P4 CODE
+  c->tail->prev = c->head; // NEW P4 CODE
   c->proc = p;
   release(&ptable.lock);
   for(;;) {
@@ -404,20 +422,24 @@ scheduler(void)
       else {
           switchuvm(c->proc);
           c->proc->state = RUNNING;
-          int after3 = 0;
-          if(p->pid == 3){
-              after3 = 1;
-          }
+//          int after3 = 0;
+//          if(p->pid == 3){
+//              after3 = 1;
+//          }
 //          cprintf("Previous proc: %s\n",p->prev->name); // TODO:  REMOVE PRINT STATEMENT
 //          cprintf("Running proc: %s\n",p->name); // TODO:  REMOVE PRINT STATEMENT
 //          cprintf("Next proc: %s\n",p->next->name); // TODO:  REMOVE PRINT STATEMENT
-
-          c->proc->switches += 1; // TODO: P4 NEW CODE
+//          if((c->proc->pid == 4) || (c->proc->pid == 5)) {
+//              cprintf("\nCompTicks for %d: %d\n", c->proc->pid, c->proc->compticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("Schedticks for %d: %d\n", c->proc->pid, c->proc->schedticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("Switches for %d: %d\n\n", c->proc->pid, c->proc->switches); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("Sleepticks for %d: %d\n\n", c->proc->pid, c->proc->sleepticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("Sleepfor for %d: %d\n\n", c->proc->pid, c->proc->sleepfor); // TODO:  REMOVE PRINT STATEMENT
+//
+//          }
+          c->proc->switches += 1; // NEW P4 CODE
           swtch(&(c->scheduler), c->proc->context);
 
-          if(after3 == 1) {
-              cprintf("made it here");
-          }
           switchkvm();
       }
       c->proc = c->proc->next;
@@ -461,6 +483,8 @@ void
 yield(void)
 {
   acquire(&ptable.lock);  //DOC: yieldlock
+  myproc()->currcompticks = 0; // NEW P4 CODE
+  myproc()->remainingslice = myproc()->timeslice; // NEW P4 CODE
   myproc()->state = RUNNABLE;
   sched();
   release(&ptable.lock);
@@ -513,6 +537,13 @@ sleep(void *chan, struct spinlock *lk)
   // Go to sleep.
   p->chan = chan;
   p->state = SLEEPING;
+  // NEW P4 CODE: Total sleepticks incremented
+  p->sleepticks++;
+  // NEW P4 CODE: Full timeslice when it wakes
+  p->remainingslice = p->timeslice;
+  // NEW P4 CODE: Starts incrementing compticks
+  p->currcompticks++;
+  // TODO: Is all this ^^ correct??
 
   sched();
 
@@ -534,16 +565,26 @@ wakeup1(void *chan)
 {
   struct proc *p;
 
-  //TODO: ADD IF CHAN == INIT && SLEEPING {THEN WAKE}
-//  if(chan->pid)
+  // TODO: I added a lot here but I think these wakeups
+  //  were waiting for I/O or something so maybe don't touch??
+
+//  //TODO: ADD IF CHAN == INIT && SLEEPING {THEN WAKE}
+  if(chan == initproc) {// NEW P4 CODE: Is this correct??
+      //                     maybe initproc.chan ??
+      initproc->state = RUNNABLE; // NEW P4 CODE
+  } // NEW P4 CODE
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-      // TODO: ADD ADDITIONAL CONDITION IF SHOULD BE WOKEN UP
-      if (p->state == SLEEPING && p->chan == chan) {
+      // NEW P4 CODE // NEW P4 CODE
+      if((p->issleeping == 1) && (ticks >= p->wakeuptime)) { // NEW P4 CODE
+          p->state = RUNNABLE; // NEW P4 CODE
+          p->issleeping = 0; // NEW P4 CODE
+      } // NEW P4 CODE
+      else if (p->state == SLEEPING && p->chan == chan) {
           p->state = RUNNABLE;
-          p->switches += 1;
       }
   }
+
 }
 
 // Wake up all processes sleeping on chan.

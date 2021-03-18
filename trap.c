@@ -51,9 +51,9 @@ trap(struct trapframe *tf)
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
-      myproc()->schedticks++;  // TODO: P4 NEW CODE
       wakeup(&ticks); // TODO: CHANGE THIS??
       release(&tickslock);
+
     }
     lapiceoi();
     break;
@@ -104,9 +104,22 @@ trap(struct trapframe *tf)
   // Force process to give up CPU on clock tick.
   // If interrupts were on while locks held, would need to check nlock.
   if(myproc() && myproc()->state == RUNNING &&
-     tf->trapno == T_IRQ0+IRQ_TIMER)
-    // TODO: if proc is out of ticks
-    yield();
+     tf->trapno == T_IRQ0+IRQ_TIMER) {
+      myproc()->schedticks++; // NEW P4 CODE
+      // TODO: if proc is out of ticks
+      if ((myproc()->remainingslice + myproc()->currcompticks) == 0) { // NEW P4 CODE
+          yield();
+      } // NEW P4 CODE
+      else { // NEW P4 CODE
+          if(myproc()->currcompticks > 0) { // NEW P4 CODE
+              myproc()->currcompticks--; // NEW P4 CODE
+              myproc()->compticks++;
+          } // NEW P4 CODE
+          else { // NEW P4 CODE
+              myproc()->remainingslice--; // NEW P4 CODE
+          } // NEW P4 CODE
+      } // NEW P4 CODE
+  }
 
   // Check if the process has been killed since we yielded
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)

@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
         j += i * j + 1;
         i++;
     }
+    exit();
 }
 
 

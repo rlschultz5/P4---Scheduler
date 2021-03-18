@@ -47,10 +47,14 @@ struct proc {
   struct proc* next;           // New P4 struct for the next process
   struct proc* prev;
   int timeslice;               // number of base ticks this process can run in a timeslice
+  int remainingslice;          // NEW P4 CODE: added to keep track of slice left to use
   int compticks;               // number of compensation ticks this process has used
+  int currcompticks;           // NEW P4 CODE: added to track current available compticks, then reset
   int schedticks;              // total number of timer ticks this process has been scheduled
   int sleepticks;              // number of ticks during which this process was blocked
-  int wenttosleep;             // TODO: added to track if process should wake
+  int sleepfor;                // NEW P4 CODE: added to track if process should wake
+  int wakeuptime;               // NEW P4 CODE: tick count to wake up at
+  int issleeping;
   int switches;                // total num times this process has been scheduled
 
   struct proc *parent;         // Parent process
