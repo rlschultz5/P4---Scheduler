@@ -580,7 +580,7 @@ wakeup1(void *chan)
           p->state = RUNNABLE; // NEW P4 CODE
           p->issleeping = 0; // NEW P4 CODE
       } // NEW P4 CODE
-      else if (p->state == SLEEPING && p->chan == chan) {
+      else if (p->state == SLEEPING && p->issleeping == 0 && p->chan == chan) { // NEW P4 CODE: I added the ==0 part
           p->state = RUNNABLE;
       }
   }
