@@ -96,13 +96,16 @@ found:
   p->switches = 0; // NEW P4 CODE
   p->currcompticks = 0; // NEW P4 CODE
   p->issleeping = 0; // NEW P4 CODE
+  p->sleepfor = 0; // NEW P4 CODE // NEW P4 CODE
+  p->wakeuptime = 0; // NEW P4 CODE // NEW P4 CODE
+  p->startsleepticks = 0; // NEW P4 CODE // NEW P4 CODE
   if(p->parent == 0) { // NEW P4 CODE
       p->timeslice = 1; // NEW P4 CODE
   } // NEW P4 CODE
   else { // NEW P4 CODE
       p->timeslice = p->parent->timeslice; // NEW P4 CODE
   } // NEW P4 CODE
-  p->remainingslice = p->timeslice; // NEW P4 CODE
+  p->remainingslice = 0; // NEW P4 CODE
 
   // NEW P4 CODE:
   //  Insert shell & the rest in Linked List
@@ -434,14 +437,15 @@ scheduler(void)
 //              cprintf("CompTicks for %d: %d\n", c->proc->pid, c->proc->compticks); // TODO:  REMOVE PRINT STATEMENT
 //              cprintf("currcompticks for %d: %d\n", c->proc->pid, c->proc->currcompticks); // TODO:  REMOVE PRINT STATEMENT
 //              cprintf("Schedticks for %d: %d\n", c->proc->pid, c->proc->schedticks); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("Sleepticks for %d: %d\n", c->proc->pid, c->proc->sleepticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("timeslice for %d: %d\n", c->proc->pid, c->proc->timeslice); // TODO:  REMOVE PRINT STATEMENT
+
+              //              cprintf("Sleepticks for %d: %d\n", c->proc->pid, c->proc->sleepticks); // TODO:  REMOVE PRINT STATEMENT
 //              cprintf("Sleepfor for %d: %d\n", c->proc->pid, c->proc->sleepfor); // TODO:  REMOVE PRINT STATEMENT
 //              cprintf("Switches for %d: %d\n", c->proc->pid, c->proc->switches); // TODO:  REMOVE PRINT STATEMENT
 //          }
-          c->proc->switches += 1; // NEW P4 CODE
           myproc()->remainingslice = myproc()->timeslice; // NEW P4 CODE
+          c->proc->switches++; // NEW P4 CODE
           swtch(&(c->scheduler), c->proc->context);
-
           switchkvm();
       }
       c->proc = c->proc->next;
@@ -690,12 +694,15 @@ setslice(int pid, int slice) // TODO: if slice < currently running p, switch
   if (slice < 1) {
     return -1;
   }
+  acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->pid == pid) {
       p->timeslice = slice;
+      release(&ptable.lock);
       return 0;
     }
   }
+  release(&ptable.lock);
   return -1;
 }
 

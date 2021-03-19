@@ -107,7 +107,7 @@ trap(struct trapframe *tf)
   if(myproc() && myproc()->state == RUNNING &&
      tf->trapno == T_IRQ0+IRQ_TIMER) {
       // TODO: if proc is out of ticks
-      if ((myproc()->remainingslice + myproc()->currcompticks) <= 0) { // NEW P4 CODE
+      if ((myproc()->remainingslice + myproc()->currcompticks) <= 1) { // NEW P4 CODE
           yield();
       } // NEW P4 CODE
       else { // NEW P4 CODE
