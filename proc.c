@@ -432,17 +432,17 @@ scheduler(void)
 //          cprintf("Previous proc: %s\n",p->prev->name); // TODO:  REMOVE PRINT STATEMENT
 //          cprintf("Running proc: %s\n",p->name); // TODO:  REMOVE PRINT STATEMENT
 //          cprintf("Next proc: %s\n",p->next->name); // TODO:  REMOVE PRINT STATEMENT
-          if((c->proc->pid == 4) || (c->proc->pid == 5)) {
-              cprintf("\nPROCESS::: %d\n", c->proc->pid); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("CompTicks for %d: %d\n", c->proc->pid, c->proc->compticks); // TODO:  REMOVE PRINT STATEMENT
-              cprintf("currcompticks for %d: %d\n", c->proc->pid, c->proc->currcompticks); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("Schedticks for %d: %d\n", c->proc->pid, c->proc->schedticks); // TODO:  REMOVE PRINT STATEMENT
-              cprintf("timeslice for %d: %d\n", c->proc->pid, c->proc->timeslice); // TODO:  REMOVE PRINT STATEMENT
-//
-//                            cprintf("Sleepticks for %d: %d\n", c->proc->pid, c->proc->sleepticks); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("Sleepfor for %d: %d\n", c->proc->pid, c->proc->sleepfor); // TODO:  REMOVE PRINT STATEMENT
-              cprintf("Switches for %d: %d\n", c->proc->pid, c->proc->switches); // TODO:  REMOVE PRINT STATEMENT
-          }
+//          if((c->proc->pid == 4) || (c->proc->pid == 5)) {
+//              cprintf("\nPROCESS::: %d\n", c->proc->pid); // TODO:  REMOVE PRINT STATEMENT
+////              cprintf("CompTicks for %d: %d\n", c->proc->pid, c->proc->compticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("currcompticks for %d: %d\n", c->proc->pid, c->proc->currcompticks); // TODO:  REMOVE PRINT STATEMENT
+////              cprintf("Schedticks for %d: %d\n", c->proc->pid, c->proc->schedticks); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("timeslice for %d: %d\n", c->proc->pid, c->proc->timeslice); // TODO:  REMOVE PRINT STATEMENT
+////
+////                            cprintf("Sleepticks for %d: %d\n", c->proc->pid, c->proc->sleepticks); // TODO:  REMOVE PRINT STATEMENT
+////              cprintf("Sleepfor for %d: %d\n", c->proc->pid, c->proc->sleepfor); // TODO:  REMOVE PRINT STATEMENT
+//              cprintf("Switches for %d: %d\n", c->proc->pid, c->proc->switches); // TODO:  REMOVE PRINT STATEMENT
+//          }
           myproc()->remainingslice = myproc()->timeslice; // NEW P4 CODE
           c->proc->switches++; // NEW P4 CODE
           swtch(&(c->scheduler), c->proc->context);

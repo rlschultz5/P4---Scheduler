@@ -3,7 +3,6 @@
 #include "user.h"
 #include "pstat.h"
 
-// TODO: Actual loop.c code
 int main(int argc, char *argv[]) {
     if(argc != 2) {
         printf(0,"Invalid parameters. Pass in number of sleeps only");
