@@ -126,17 +126,17 @@ found:
       } // NEW P4 CODE
   } // NEW P4 CODE
 
-//    if(p->pid >= 3) { // TODO: P4 NEW CODE
-//        cprintf("Curr proc: %d\n", p->pid); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Curr.prev proc: %s\n", p->prev->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Curr.next proc: %s\n", p->next->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Previous proc: %s\n", p->prev->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Prev.prev proc: %s\n", p->prev->prev->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Prev.next proc: %d\n", p->prev->next->pid); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Next proc: %s\n", p->next->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Next.prev proc: %d\n", p->next->prev->pid); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Next.next proc: %s\n", p->next->next->name); // TODO:  REMOVE PRINT STATEMENT
-//    }
+//    if(p->pid >= 3) { // DEBUGGING PRINTS
+//        cprintf("Curr proc: %d\n", p->pid); // DEBUGGING PRINTS
+//        cprintf("Curr.prev proc: %s\n", p->prev->name); // DEBUGGING PRINTS
+//        cprintf("Curr.next proc: %s\n", p->next->name); // DEBUGGING PRINTS
+//        cprintf("Previous proc: %s\n", p->prev->name); // DEBUGGING PRINTS
+//        cprintf("Prev.prev proc: %s\n", p->prev->prev->name); // DEBUGGING PRINTS
+//        cprintf("Prev.next proc: %d\n", p->prev->next->pid); // DEBUGGING PRINTS
+//        cprintf("Next proc: %s\n", p->next->name); // DEBUGGING PRINTS
+//        cprintf("Next.prev proc: %d\n", p->next->prev->pid); // DEBUGGING PRINTS
+//        cprintf("Next.next proc: %s\n", p->next->next->name); // DEBUGGING PRINTS
+//    } // DEBUGGING PRINTS
 
   release(&ptable.lock);
 
@@ -312,24 +312,24 @@ exit(void)
   if(mycpu()->tail == curproc) {// NEW P4 CODE
       mycpu()->tail = curproc->prev;// NEW P4 CODE
   }// NEW P4 CODE
-//    if(curproc->pid >= 3) {
-//        cprintf("Curr proc: %d\n", curproc->pid); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Curr.prev proc: %s\n", curproc->prev->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Curr.next proc: %s\n", curproc->next->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Previous proc: %s\n", curproc->prev->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Prev.prev proc: %s\n", curproc->prev->prev->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Prev.next proc: %s\n", curproc->prev->next->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Next proc: %s\n", curproc->next->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Next.prev proc: %s\n", curproc->next->prev->name); // TODO:  REMOVE PRINT STATEMENT
-//        cprintf("Next.next proc: %s\n", curproc->next->next->name); // TODO:  REMOVE PRINT STATEMENT
-//    }
+//    if(curproc->pid >= 3) { // DEBUGGING PRINTS
+//        cprintf("Curr proc: %d\n", curproc->pid); // DEBUGGING PRINTS
+//        cprintf("Curr.prev proc: %s\n", curproc->prev->name); // DEBUGGING PRINTS
+//        cprintf("Curr.next proc: %s\n", curproc->next->name); // DEBUGGING PRINTS
+//        cprintf("Previous proc: %s\n", curproc->prev->name); // DEBUGGING PRINTS
+//        cprintf("Prev.prev proc: %s\n", curproc->prev->prev->name); // DEBUGGING PRINTS
+//        cprintf("Prev.next proc: %s\n", curproc->prev->next->name); // DEBUGGING PRINTS
+//        cprintf("Next proc: %s\n", curproc->next->name); // DEBUGGING PRINTS
+//        cprintf("Next.prev proc: %s\n", curproc->next->prev->name); // DEBUGGING PRINTS
+//        cprintf("Next.next proc: %s\n", curproc->next->next->name); // DEBUGGING PRINTS
+//    } // DEBUGGING PRINTS
 //    struct proc *temp = mycpu()->head;
-//    cprintf("Head: "); // TODO:  REMOVE PRINT STATEMENT
-//    while(temp != 0) {
-//        cprintf("%s->", temp->name); // TODO:  REMOVE PRINT STATEMENT
-//        temp = temp->next;
-//    }
-//    cprintf("\n"); // TODO:  REMOVE PRINT STATEMENT
+//    cprintf("Head: "); // DEBUGGING PRINTS
+//    while(temp != 0) { // DEBUGGING PRINTS
+//        cprintf("%s->", temp->name); // DEBUGGING PRINTS
+//        temp = temp->next; // DEBUGGING PRINTS
+//    } // DEBUGGING PRINTS
+//    cprintf("\n"); // DEBUGGING PRINTS
 
 
 
@@ -429,20 +429,19 @@ scheduler(void)
 //          if(p->pid == 3){
 //              after3 = 1;
 //          }
-//          cprintf("Previous proc: %s\n",p->prev->name); // TODO:  REMOVE PRINT STATEMENT
-//          cprintf("Running proc: %s\n",p->name); // TODO:  REMOVE PRINT STATEMENT
-//          cprintf("Next proc: %s\n",p->next->name); // TODO:  REMOVE PRINT STATEMENT
+//          cprintf("Previous proc: %s\n",p->prev->name); // DEBUGGING PRINTS
+//          cprintf("Running proc: %s\n",p->name); // DEBUGGING PRINTS
+//          cprintf("Next proc: %s\n",p->next->name); // DEBUGGING PRINTS
 //          if((c->proc->pid == 4) || (c->proc->pid == 5)) {
-//              cprintf("\nPROCESS::: %d\n", c->proc->pid); // TODO:  REMOVE PRINT STATEMENT
-////              cprintf("CompTicks for %d: %d\n", c->proc->pid, c->proc->compticks); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("currcompticks for %d: %d\n", c->proc->pid, c->proc->currcompticks); // TODO:  REMOVE PRINT STATEMENT
-////              cprintf("Schedticks for %d: %d\n", c->proc->pid, c->proc->schedticks); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("timeslice for %d: %d\n", c->proc->pid, c->proc->timeslice); // TODO:  REMOVE PRINT STATEMENT
-////
-////                            cprintf("Sleepticks for %d: %d\n", c->proc->pid, c->proc->sleepticks); // TODO:  REMOVE PRINT STATEMENT
-////              cprintf("Sleepfor for %d: %d\n", c->proc->pid, c->proc->sleepfor); // TODO:  REMOVE PRINT STATEMENT
-//              cprintf("Switches for %d: %d\n", c->proc->pid, c->proc->switches); // TODO:  REMOVE PRINT STATEMENT
-//          }
+//              cprintf("\nPROCESS::: %d\n", c->proc->pid); // DEBUGGING PRINTS
+////              cprintf("CompTicks for %d: %d\n", c->proc->pid, c->proc->compticks); // DEBUGGING PRINTS
+//              cprintf("currcompticks for %d: %d\n", c->proc->pid, c->proc->currcompticks); // DEBUGGING PRINTS
+////              cprintf("Schedticks for %d: %d\n", c->proc->pid, c->proc->schedticks); // DEBUGGING PRINTS
+//              cprintf("timeslice for %d: %d\n", c->proc->pid, c->proc->timeslice); // DEBUGGING PRINTS
+////                            cprintf("Sleepticks for %d: %d\n", c->proc->pid, c->proc->sleepticks); // DEBUGGING PRINTS
+////              cprintf("Sleepfor for %d: %d\n", c->proc->pid, c->proc->sleepfor); // DEBUGGING PRINTS
+//              cprintf("Switches for %d: %d\n", c->proc->pid, c->proc->switches); // DEBUGGING PRINTS
+//          } // DEBUGGING PRINTS
           myproc()->remainingslice = myproc()->timeslice; // NEW P4 CODE
           c->proc->switches++; // NEW P4 CODE
           swtch(&(c->scheduler), c->proc->context);
@@ -539,20 +538,14 @@ sleep(void *chan, struct spinlock *lk)
     acquire(&ptable.lock);  //DOC: sleeplock1
     release(lk);
   }
-  if(myproc()->state == RUNNABLE){ // TODO: TESTING RESESTING CURRCOMPTICKS
-      myproc()->currcompticks = 0; // TODO: TESTING RESESTING CURRCOMPTICKS
-  } // TODO: TESTING RESESTING CURRCOMPTICKS
-
+  if(myproc()->state == RUNNABLE){ // NEW P4 CODE
+      myproc()->currcompticks = 0; // NEW P4 CODE
+  } // NEW P4 CODE
   // Go to sleep.
   p->chan = chan;
   p->state = SLEEPING;
-  // NEW P4 CODE: Total sleepticks incremented
-//  p->sleepticks++;
   // NEW P4 CODE: Full timeslice when it wakes
   p->remainingslice = p->timeslice;
-  // NEW P4 CODE: Starts incrementing compticks
-//  p->currcompticks++;
-  // TODO: Is all this ^^ correct??
 
   sched();
 
@@ -574,12 +567,11 @@ wakeup1(void *chan)
 {
   struct proc *p;
 
-//  //TODO: IF CHAN == INIT && SLEEPING {THEN WAKE}??
+// NEW P4 CODE: IF CHAN == INIT && SLEEPING {THEN WAKE}??
   if(chan == initproc) {// NEW P4 CODE: Is this correct??
       //                     maybe initproc.chan ??
       initproc->state = RUNNABLE; // NEW P4 CODE
   } // NEW P4 CODE
-    // TODO: IS THIS CORRECT??
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
       if(p->issleeping == 1) {
           if(ticks >= p->wakeuptime) { // NEW P4 CODE
@@ -597,7 +589,6 @@ wakeup1(void *chan)
 }
       } // NEW P4 CODE
 
-      // TODO: I THINK THIS CHECK STILL NEEDS TO BE HERE TOO BUT ADDED "ISSLEEPING" CHECK
       else if (p->state == SLEEPING && p->issleeping == 0 && p->chan == chan) { // NEW P4 CODE: I added the ==0 part
 //      else if (p->state == SLEEPING && p->chan == chan) {
           p->state = RUNNABLE;
@@ -688,7 +679,7 @@ procdump(void)
 // 6 ticks, but the new time slice value is 4 ticks), you should
 // immediately schedule the next process.
 int
-setslice(int pid, int slice) // TODO: if slice < currently running p, switch
+setslice(int pid, int slice)
 {
   struct proc *p;
   if (slice < 1) {
@@ -769,7 +760,7 @@ fork2(int slice)
 int
 getpinfo(struct pstat* pstat_getpinfo)
 {
-  if(pstat_getpinfo == 0) // TODO: Make sure this NULL check works
+  if(pstat_getpinfo == 0)
     return -1;
 
   struct proc *p;
