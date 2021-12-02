@@ -3,24 +3,27 @@ To understand existing code for performing context-switches in the xv6 kernel
 To implement a basic round-robin (RR) scheduler that compensates processes that relinquish the CPU
 To implement system calls that extract process states
 To implement a user-level program that tests the basic compensation behavior of the scheduler
+
 # Overview
-In this project, you’ll be modifying the Round Robin (RR) CPU scheduler in xv6 so that processes can have different time-slice lengths and are "compensated" in different ways for the amount of time they are blocked (and thus cannot be scheduled).
+In this project, you’ll be modifying the Round Robin (RR) CPU scheduler in xv6 so that processes can have different time-slice lengths 
+and are "compensated" in different ways for the amount of time they are blocked (and thus cannot be scheduled).
 Particularly useful for this project: Chapter 5 (https://pdos.csail.mit.edu/6.828/2018/xv6/book- rev11.pdf) in xv6 book.
 In this document we:
 1. specify how your new xv6 scheduler (CRR) must behave 2. specify the new system calls you must add
 3. specify the simple user-level application you must write 4. describe the existing xv6 scheduling implementation
 5. give suggestions for implementing this project
 6. specify other requirements for completing this project
+
 # 1) Compensated Round-Robin (CRR) Scheduler Requirements
-The current xv6 scheduler implements a very simple Round Robin (RR) policy. For example, if there are three processes A, B and C, then the xv6 round-robin scheduler will run the jobs in the order A B C A B C ... , where each letter represents a process. The xv6 scheduler runs each process for at most one timer tick (10 ms); after each timer tick, the scheduler moves the previous job to the end of the ready queue and dispatches the next job in the list. The xv6 scheduler does not do anything special when a process sleeps or blocks (and is unable to be scheduled); the blocked job is simply skipped until it is ready and it is again its turn in the RR order.
+The current xv6 scheduler implements a very simple Round Robin (RR) policy. For example, if there are three processes A, B and C, then 
+the xv6 round-robin scheduler will run the jobs in the order A B C A B C ... , where each letter represents a process. The xv6 scheduler 
+runs each process for at most one timer tick (10 ms); after each timer tick, the scheduler moves the previous job to the end of the ready 
+queue and dispatches the next job in the list. The xv6 scheduler does not do anything special when a process sleeps or blocks (and is unable 
+to be scheduled); the blocked job is simply skipped until it is ready and it is again its turn in the RR order.
  You will implement a new Compensated RR scheduler with three new features:
-1 of 13 3/8/21, 8:38 PM
-P4: xv6 Scheduling https://canvas.wisc.edu/courses/230447/assignments/1069118
-1. Different time-slice lengths (i.e., a different number of timer ticks) for different processes
-2. Compensating processes for the amount of time they were blocked by scheduling those
-processes for a longer time-slice when they awake
-3. Improving the sleep/wakeup mechanism so that processes are unblocked only after their sleep
-interval has expired, instead of on every 10 ms timer tick
+   1. Different time-slice lengths (i.e., a different number of timer ticks) for different processes
+   2. Compensating processes for the amount of time they were blocked by scheduling those processes for a longer time-slice when they awake
+   3. Improving the sleep/wakeup mechanism so that processes are unblocked only after their sleep interval has expired, instead of on every 10 ms timer tick
 
 
 
